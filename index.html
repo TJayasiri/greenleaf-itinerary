@@ -120,6 +120,15 @@
       </div>
       <div class="table-wrap">
         <table id="flightTable">
+
+          <colgroup>
+  <col style="width:14%">
+  <col style="width:16%">
+  <col style="width:25%">
+  <col style="width:25%">
+  <col style="width:10%">
+  <col style="width:10%">
+  </colgroup>
           <thead>
             <tr>
               <th>Flight</th><th>Date (ISO)</th><th>From (IATA)</th><th>To (IATA)</th><th>Dep (24h)</th><th>Arr (24h)</th><th class="row-actions">Actions</th>
@@ -130,15 +139,24 @@
       </div>
       <datalist id="airports"></datalist>
     </section>
-
+    
+<div class="page-break" aria-hidden="true"></div>
+    
     <!-- Visits -->
-    <section class="card">
+    <section class="card" id="visitsSection">
       <div class="actions">
         <h2><svg><use href="#i-factory"/></svg>Visits</h2>
         <button class="btn small" id="addVisit"><svg><use href="#i-plus"/></svg>Add activity</button>
       </div>
       <div class="table-wrap">
         <table id="visitTable">
+          <colgroup>
+  <col style="width:16%">
+  <col style="width:20%">
+  <col style="width:26%">
+  <col style="width:28%">
+  <col style="width:10%">
+</colgroup>
           <thead>
             <tr>
               <th>Date (ISO)</th><th>Activity</th><th>Facility</th><th>Address</th><th>Transport</th><th class="row-actions">Actions</th>
@@ -150,7 +168,7 @@
     </section>
 
     <!-- Hotel (moved down) -->
-    <section class="card">
+    <section class="card" id="hotelSection">
       <h2><svg><use href="#i-hotel"/></svg>Hotel</h2>
       <div class="grid col-2">
         <div>
