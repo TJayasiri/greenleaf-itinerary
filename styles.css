@@ -96,4 +96,54 @@ tbody td input[list]{text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
   .docbar{display:flex;justify-content:space-between;font-size:10.5px;color:#000;margin:0 0 4mm 0;border-bottom:.5pt solid #bcbcbc;padding-bottom:2mm}
 }
 
+/* === v3.2.1 polish === */
+
+/* Better column behavior on screen */
+.table-flex { table-layout: fixed; }
+.table-flex td input[list]{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* tidy UI */
+}
+
+/* Prevent ugly word breaks for long addresses/notes */
+.note, .keep { word-break: normal; hyphens: none; }
+
+/* Bold the key headers for both tables */
+#flightTable thead th:nth-child(1),
+#flightTable thead th:nth-child(2),
+#flightTable thead th:nth-child(3),
+#flightTable thead th:nth-child(4),
+#flightTable thead th:nth-child(5),
+#flightTable thead th:nth-child(6),
+#visitTable thead th:nth-child(1),
+#visitTable thead th:nth-child(2),
+#visitTable thead th:nth-child(3),
+#visitTable thead th:nth-child(4),
+#visitTable thead th:nth-child(5) {
+  font-weight: 700;
+}
+
+/* Print refinements */
+@media print {
+  /* Force Visits & Hotel to page 2 */
+  .page-break { break-before: page; }
+  #visitsSection { break-before: page; }
+  #hotelSection  { break-inside: avoid; }
+
+  /* Full text in print (no ellipsis), but stay within page */
+  .table-flex td input[list]{
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  /* Keep addresses/notes together when possible */
+  .keep { break-inside: avoid; }
+
+  /* Optional: add a bit more breathing room on page 1,
+     then start page 2 at Visits */
+  header.hero { margin-bottom: 6mm; }
+}
+
 /* dynamic @page injected by JS */
