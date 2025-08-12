@@ -1,10 +1,8 @@
-// Pro v3 — modern UI + pro print
 (function(){
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-  const KEY = 'greenleaf_itinerary_pro_v3';
+  const KEY = 'greenleaf_itinerary_pro_v3_1';
 
-  // SEA airports (expanded)
   const SEA_AIRPORTS = [
     "SINGAPORE (SIN)","KUALA LUMPUR (KUL)","PENANG (PEN)","LANGKAWI (LGK)","JOHOR BAHRU (JHB)","KOTA KINABALU (BKI)","KUCHING (KCH)",
     "BANGKOK SUVARNABHUMI (BKK)","BANGKOK DON MUEANG (DMK)","PHUKET (HKT)","CHIANG MAI (CNX)","CHIANG RAI (CEI)","KRABI (KBV)","HAT YAI (HDY)",
@@ -14,36 +12,32 @@
     "VIENTIANE (VTE)","LUANG PRABANG (LPQ)","PAKSE (PKZ)",
     "YANGON (RGN)","MANDALAY (MDL)",
     "MANILA (MNL)","CLARK (CRK)","CEBU (CEB)","DAVAO (DVO)","ILOILO (ILO)","CAGAYAN DE ORO (CGY)",
-    "BRUNEI (BWN)",
-    "DILI (DIL)"
+    "BRUNEI (BWN)","DILI (DIL)"
   ];
 
-  const dl = $('#airports');
+  const dl = document.getElementById('airports');
   SEA_AIRPORTS.forEach(a => { const o=document.createElement('option'); o.value=a; dl.appendChild(o); });
 
-  // Watermark defaults
-  const wmWrap = $('#watermarkWrap');
+  const wmWrap = document.getElementById('watermarkWrap');
   wmWrap.dataset.wm = "";
   document.documentElement.style.setProperty('--wm-size', '96px');
   document.documentElement.style.setProperty('--wm-opacity', '0.05');
   document.documentElement.style.setProperty('--wm-rot', '-24deg');
 
-  // Dynamic @page
   const printStyle = document.createElement('style');
   document.head.appendChild(printStyle);
   function setPrint(page='A4', margin='normal'){
-    let mm; switch(margin){case'narrow':mm='8mm';break;case'wide':mm='18mm';break;default:mm='12mm'}
-    printStyle.textContent = `@page{{ size:${page}; margin:${mm}; }}`.replace("{{","{").replace("}}","}");
+    let mm; switch(margin){case'narrow':mm='8mm';break;case'wide':mm='18mm';break;default:mm='10mm'}
+    printStyle.textContent = `@page{ size:${page}; margin:${mm}; }`;
   }
 
-  // Signature previews
   function bindSignaturePreview(prefix){
-    const nameEl = $(`[data-field="${prefix}Name"]`);
-    const posEl  = $(`[data-field="${prefix}Pos"]`);
-    const imgEl  = $(`[data-field="${prefix}Img"]`);
-    const namePrev = $(`#${prefix}NamePreview`);
-    const posPrev  = $(`#${prefix}PosPreview`);
-    const imgPrev  = $(`#${prefix}Preview`);
+    const nameEl = document.querySelector(`[data-field="${prefix}Name"]`);
+    const posEl  = document.querySelector(`[data-field="${prefix}Pos"]`);
+    const imgEl  = document.querySelector(`[data-field="${prefix}Img"]`);
+    const namePrev = document.getElementById(`${prefix}NamePreview`);
+    const posPrev  = document.getElementById(`${prefix}PosPreview`);
+    const imgPrev  = document.getElementById(`${prefix}Preview`);
     function sync(){
       if(namePrev) namePrev.textContent = nameEl?.value || "";
       if(posPrev)  posPrev.textContent  = posEl?.value || "";
@@ -55,30 +49,30 @@
   bindSignaturePreview('sigPrepared');
   bindSignaturePreview('sigApproved');
 
-  // Buttons / elements
-  const pageSize   = $('#pageSize');
-  const marginSize = $('#marginSize');
-  const uppercase  = $('#uppercaseMode');
-  const disclaimerToggle = $('#toggleDisclaimer');
-  const disclaimerText   = $('#disclaimerText');
-  const brandLogo = $('#brandLogo');
-  const logoURL = $('#logoURL');
-  $('#applyLogo')?.addEventListener('click', ()=>{ if(logoURL.value) brandLogo.src = logoURL.value; autosave(); });
+  document.getElementById('year').textContent = new Date().getFullYear();
+  const brandLogo = document.getElementById('brandLogo');
+  const logoURL = document.getElementById('logoURL');
+  document.getElementById('applyLogo')?.addEventListener('click', ()=>{ if(logoURL.value) brandLogo.src = logoURL.value; autosave(); });
 
-  // Watermark controls
-  const wmText = $('#wmText'); const wmToggle = $('#wmToggle');
-  const wmOpacity = $('#wmOpacity'); const wmSize = $('#wmSize'); const wmAngle = $('#wmAngle');
+  const wmText = document.getElementById('wmText'); const wmToggle = document.getElementById('wmToggle');
+  const wmOpacity = document.getElementById('wmOpacity'); const wmSize = document.getElementById('wmSize'); const wmAngle = document.getElementById('wmAngle');
   function applyWatermark(){
     wmWrap.dataset.wm = wmToggle?.checked ? (wmText?.value || '') : '';
     document.documentElement.style.setProperty('--wm-opacity', wmOpacity?.value || 0.05);
     document.documentElement.style.setProperty('--wm-size', (wmSize?.value || 96)+'px');
     document.documentElement.style.setProperty('--wm-rot', (wmAngle?.value || -24)+'deg');
   }
-  ;[wmText, wmToggle, wmOpacity, wmSize, wmAngle].forEach(el => el && el.addEventListener('input', ()=>{ applyWatermark(); autosave(); }));
+  [wmText, wmToggle, wmOpacity, wmSize, wmAngle].forEach(el => el && el.addEventListener('input', ()=>{ applyWatermark(); autosave(); }));
 
-  // Tables
-  const flightBody = $('#flightTable tbody');
-  const visitBody  = $('#visitTable tbody');
+  const pageSize   = document.getElementById('pageSize');
+  const marginSize = document.getElementById('marginSize');
+  const uppercase  = document.getElementById('uppercaseMode');
+  const disclaimerToggle = document.getElementById('toggleDisclaimer');
+  const disclaimerText   = document.getElementById('disclaimerText');
+
+  const flightBody = document.querySelector('#flightTable tbody');
+  const visitBody  = document.querySelector('#visitTable tbody');
+
   function escapeVal(v){ return (v||'').toString().replace(/"/g,'&quot;'); }
   function flightRow(data={}){
     const tr = document.createElement('tr');
@@ -114,77 +108,76 @@
     if(!visitBody.children.length)  visitBody.appendChild(visitRow());
   }
 
-  // Collect / Populate
   function collect(){
     return {
       head: {
         docTitle: 'OFFICIAL BUSINESS ITINERARY',
-        tripTag:  $('[data-field="tripTag"]').innerText.trim(),
-        brandName: $('[data-field="brandName"]').innerText.trim(),
+        tripTag:  document.querySelector('[data-field="tripTag"]').innerText.trim(),
+        brandName: document.querySelector('[data-field="brandName"]').innerText.trim(),
         logo: brandLogo.src || ''
       },
       overview: {
-        participants: $('[textarea][data-field="participants"]').value,
-        phones:       $('[textarea][data-field="phones"]').value,
-        purpose:      $('[data-field="purpose"]').value,
-        factory:      $('[data-field="factory"]').value,
-        startDate:    $('[data-field="startDate"]').value,
-        endDate:      $('[data-field="endDate"]').value,
-        hotel:        $('[data-field="hotel"]')?.value || '',
-        map:          $('[data-field="map"]')?.value || '',
-        hotelContacts:$('[data-field="hotelContacts"]')?.value || ''
+        participants: document.querySelector('[textarea][data-field="participants"]').value,
+        phones:       document.querySelector('[textarea][data-field="phones"]').value,
+        purpose:      document.querySelector('[data-field="purpose"]')?.value || '',
+        factory:      document.querySelector('[data-field="factory"]')?.value || '',
+        startDate:    document.querySelector('[data-field="startDate"]').value,
+        endDate:      document.querySelector('[data-field="endDate"]').value,
+        hotel:        document.querySelector('[data-field="hotel"]')?.value || '',
+        map:          document.querySelector('[data-field="map"]')?.value || '',
+        hotelContacts:document.querySelector('[data-field="hotelContacts"]')?.value || ''
       },
-      flights: $$('#flightTable tbody tr').map(tr=>{
-        const tds = $$('td', tr);
+      flights: Array.from(document.querySelectorAll('#flightTable tbody tr')).map(tr=>{
+        const tds = tr.querySelectorAll('td');
         return {
-          flight: $('input', tds[0]).value,
-          date:   $('input', tds[1]).value,
-          from:   $('input', tds[2]).value,
-          to:     $('input', tds[3]).value,
-          dep:    $('input', tds[4]).value,
-          arr:    $('input', tds[5]).value,
+          flight: tds[0].querySelector('input').value,
+          date:   tds[1].querySelector('input').value,
+          from:   tds[2].querySelector('input').value,
+          to:     tds[3].querySelector('input').value,
+          dep:    tds[4].querySelector('input').value,
+          arr:    tds[5].querySelector('input').value,
         };
       }),
-      visits: $$('#visitTable tbody tr').map(tr=>{
-        const tds = $$('td', tr);
+      visits: Array.from(document.querySelectorAll('#visitTable tbody tr')).map(tr=>{
+        const tds = tr.querySelectorAll('td');
         return {
-          date: $('input', tds[0]).value,
-          activity: $('input', tds[1]).value,
-          facility: $('input', tds[2]).value,
-          address: $('textarea', tds[3]).value,
-          transport: $('select', tds[4]).value,
+          date: tds[0].querySelector('input').value,
+          activity: tds[1].querySelector('input').value,
+          facility: tds[2].querySelector('input').value,
+          address: tds[3].querySelector('textarea').value,
+          transport: tds[4].querySelector('select').value,
         };
       }),
       notes: {
-        pickup:       $('[data-field="pickup"]').innerHTML,
-        instructions: $('[data-field="instructions"]').innerHTML,
-        payment:      $('[data-field="payment"]').innerHTML,
-        contacts:     $('[data-field="contacts"]').innerHTML
+        pickup:       document.querySelector('[data-field="pickup"]').innerHTML,
+        instructions: document.querySelector('[data-field="instructions"]').innerHTML,
+        payment:      document.querySelector('[data-field="payment"]').innerHTML,
+        contacts:     document.querySelector('[data-field="contacts"]').innerHTML
       },
       footer: {
-        showDisclaimer: $('#toggleDisclaimer')?.checked ?? true,
-        disclaimer: $('#disclaimerText')?.value || ''
+        showDisclaimer: disclaimerToggle?.checked ?? true,
+        disclaimer: disclaimerText?.value || ''
       },
       sig: {
         prepared: {
-          name: $('[data-field="sigPreparedName"]')?.value || '',
-          pos:  $('[data-field="sigPreparedPos"]')?.value || '',
-          img:  $('[data-field="sigPreparedImg"]')?.value || '',
-          date: $('[data-field="sigPreparedDate"]')?.value || ''
+          name: document.querySelector('[data-field="sigPreparedName"]')?.value || '',
+          pos:  document.querySelector('[data-field="sigPreparedPos"]')?.value || '',
+          img:  document.querySelector('[data-field="sigPreparedImg"]')?.value || '',
+          date: document.querySelector('[data-field="sigPreparedDate"]')?.value || ''
         },
         approved: {
-          name: $('[data-field="sigApprovedName"]')?.value || '',
-          pos:  $('[data-field="sigApprovedPos"]')?.value || '',
-          img:  $('[data-field="sigApprovedImg"]')?.value || '',
-          date: $('[data-field="sigApprovedDate"]')?.value || ''
+          name: document.querySelector('[data-field="sigApprovedName"]')?.value || '',
+          pos:  document.querySelector('[data-field="sigApprovedPos"]')?.value || '',
+          img:  document.querySelector('[data-field="sigApprovedImg"]')?.value || '',
+          date: document.querySelector('[data-field="sigApprovedDate"]')?.value || ''
         }
       },
       wm: {
-        text: wmText?.value || '',
-        on: wmToggle?.checked || false,
-        opacity: wmOpacity?.value || 0.05,
-        size: wmSize?.value || 96,
-        angle: wmAngle?.value || -24
+        text: document.getElementById('wmText')?.value || '',
+        on: document.getElementById('wmToggle')?.checked || false,
+        opacity: document.getElementById('wmOpacity')?.value || 0.05,
+        size: document.getElementById('wmSize')?.value || 96,
+        angle: document.getElementById('wmAngle')?.value || -24
       },
       prefs: {
         pageSize: pageSize.value,
@@ -196,26 +189,26 @@
 
   function populate(data){
     try{
-      $('[data-field="tripTag"]').innerText  = data.head?.tripTag  || 'SINGAPORE MANAGEMENT SUPPORT';
-      $('[data-field="brandName"]').innerText= data.head?.brandName || 'Greenleaf Assurance';
-      $('#brandNameFooter').textContent      = data.head?.brandName || 'Greenleaf Assurance';
+      document.querySelector('[data-field="tripTag"]').innerText  = data.head?.tripTag  || 'SINGAPORE MANAGEMENT SUPPORT';
+      document.querySelector('[data-field="brandName"]').innerText= data.head?.brandName || 'Greenleaf Assurance';
+      document.getElementById('brandNameFooter').textContent      = data.head?.brandName || 'Greenleaf Assurance';
       brandLogo.src = data.head?.logo || brandLogo.src;
-      $('#logoURL') && ($('#logoURL').value = brandLogo.src);
+      document.getElementById('logoURL') && (document.getElementById('logoURL').value = brandLogo.src);
 
-      $('[textarea][data-field="participants"]').value = data.overview?.participants || '';
-      $('[textarea][data-field="phones"]').value       = data.overview?.phones || '';
-      $('[data-field="purpose"]').value                = data.overview?.purpose || '';
-      $('[data-field="factory"]').value                = data.overview?.factory || '';
-      $('[data-field="startDate"]').value              = data.overview?.startDate || '';
-      $('[data-field="endDate"]').value                = data.overview?.endDate || '';
-      $('[data-field="hotel"]').value                  = data.overview?.hotel || '';
-      $('[data-field="map"]').value                    = data.overview?.map || '';
-      $('[data-field="hotelContacts"]').value          = data.overview?.hotelContacts || '';
+      document.querySelector('[textarea][data-field="participants"]').value = data.overview?.participants || '';
+      document.querySelector('[textarea][data-field="phones"]').value       = data.overview?.phones || '';
+      document.querySelector('[data-field="purpose"]') && (document.querySelector('[data-field="purpose"]').value = data.overview?.purpose || '');
+      document.querySelector('[data-field="factory"]') && (document.querySelector('[data-field="factory"]').value = data.overview?.factory || '');
+      document.querySelector('[data-field="startDate"]').value              = data.overview?.startDate || '';
+      document.querySelector('[data-field="endDate"]').value                = data.overview?.endDate || '';
+      document.querySelector('[data-field="hotel"]') && (document.querySelector('[data-field="hotel"]').value = data.overview?.hotel || '');
+      document.querySelector('[data-field="map"]') && (document.querySelector('[data-field="map"]').value = data.overview?.map || '');
+      document.querySelector('[data-field="hotelContacts"]') && (document.querySelector('[data-field="hotelContacts"]').value = data.overview?.hotelContacts || '');
 
       const datesBind = document.querySelector('[data-bind="dates"]');
       if(datesBind){
-        const s = $('[data-field="startDate"]').value;
-        const e = $('[data-field="endDate"]').value;
+        const s = document.querySelector('[data-field="startDate"]').value;
+        const e = document.querySelector('[data-field="endDate"]').value;
         datesBind.textContent = (s && e) ? `${s} – ${e}` : '';
       }
 
@@ -225,26 +218,26 @@
       (data.visits||[]).forEach(r=> visitBody.appendChild(visitRow(r)));
       ensureAtLeastOneRow();
 
-      $('[data-field="pickup"]').innerHTML       = data.notes?.pickup || '';
-      $('[data-field="instructions"]').innerHTML = data.notes?.instructions || '';
-      $('[data-field="payment"]').innerHTML      = data.notes?.payment || '';
-      $('[data-field="contacts"]').innerHTML     = data.notes?.contacts || '';
+      document.querySelector('[data-field="pickup"]').innerHTML       = data.notes?.pickup || '';
+      document.querySelector('[data-field="instructions"]').innerHTML = data.notes?.instructions || '';
+      document.querySelector('[data-field="payment"]').innerHTML      = data.notes?.payment || '';
+      document.querySelector('[data-field="contacts"]').innerHTML     = data.notes?.contacts || '';
 
       ['sigPrepared','sigApproved'].forEach(p=>{
-        const name = $('[data-field="'+p+'Name"]'); const pos = $('[data-field="'+p+'Pos"]'); const img = $('[data-field="'+p+'Img"]');
-        $('#'+p+'NamePreview').textContent = name?.value || '';
-        $('#'+p+'PosPreview').textContent  = pos?.value || '';
-        const src = img?.value || ''; const tag = $('#'+p+'Preview'); tag.src = src; tag.style.display = src ? 'block':'none';
+        const name = document.querySelector('[data-field="'+p+'Name"]'); const pos = document.querySelector('[data-field="'+p+'Pos"]'); const img = document.querySelector('[data-field="'+p+'Img"]');
+        document.getElementById(p+'NamePreview').textContent = name?.value || '';
+        document.getElementById(p+'PosPreview').textContent  = pos?.value || '';
+        const src = img?.value || ''; const tag = document.getElementById(p+'Preview'); tag.src = src; tag.style.display = src ? 'block':'none';
       });
 
-      if($('#toggleDisclaimer')) $('#toggleDisclaimer').checked = !!data.footer?.showDisclaimer;
-      if($('#disclaimerText') && data.footer?.disclaimer) $('#disclaimerText').value = data.footer.disclaimer;
+      if(disclaimerToggle) disclaimerToggle.checked = !!data.footer?.showDisclaimer;
+      if(disclaimerText && data.footer?.disclaimer) disclaimerText.value = data.footer.disclaimer;
 
-      if($('#wmText')) $('#wmText').value = data.wm?.text || '';
-      if($('#wmToggle')) $('#wmToggle').checked = !!data.wm?.on;
-      if($('#wmOpacity')) $('#wmOpacity').value = data.wm?.opacity || 0.05;
-      if($('#wmSize')) $('#wmSize').value    = data.wm?.size || 96;
-      if($('#wmAngle')) $('#wmAngle').value   = data.wm?.angle || -24;
+      document.getElementById('wmText') && (document.getElementById('wmText').value = data.wm?.text || '');
+      document.getElementById('wmToggle') && (document.getElementById('wmToggle').checked = !!data.wm?.on);
+      document.getElementById('wmOpacity') && (document.getElementById('wmOpacity').value = data.wm?.opacity || 0.05);
+      document.getElementById('wmSize')    && (document.getElementById('wmSize').value    = data.wm?.size || 96);
+      document.getElementById('wmAngle')   && (document.getElementById('wmAngle').value   = data.wm?.angle || -24);
       applyWatermark();
 
       pageSize.value = data.prefs?.pageSize || 'A4';
@@ -257,13 +250,13 @@
   function autosave(){ localStorage.setItem(KEY, JSON.stringify(collect())); }
   document.addEventListener('input', (e)=>{
     if(e.target.matches('input, textarea, select,[contenteditable]')){
-      if($('#uppercaseMode')?.checked && e.target.classList.contains('upper')){
+      if(document.getElementById('uppercaseMode')?.checked && e.target.classList.contains('upper')){
         const s = e.target.selectionStart, t = e.target.selectionEnd;
         e.target.value = e.target.value.toUpperCase(); try{ e.target.setSelectionRange(s,t);}catch{}
       }
       if(e.target.matches('[data-field="startDate"],[data-field="endDate"]')){
-        const s = $('[data-field="startDate"]').value;
-        const e2= $('[data-field="endDate"]').value;
+        const s = document.querySelector('[data-field="startDate"]').value;
+        const e2= document.querySelector('[data-field="endDate"]').value;
         const datesBind = document.querySelector('[data-bind="dates"]');
         if(datesBind) datesBind.textContent = (s && e2) ? `${s} – ${e2}` : '';
       }
@@ -271,33 +264,29 @@
     }
   });
 
-  // Actions
-  $('#addFlight').addEventListener('click', ()=>{ flightBody.appendChild(flightRow()); autosave(); });
-  $('#addVisit').addEventListener('click', ()=>{ visitBody.appendChild(visitRow()); autosave(); });
+  document.getElementById('addFlight').addEventListener('click', ()=>{ flightBody.appendChild(flightRow()); autosave(); });
+  document.getElementById('addVisit').addEventListener('click', ()=>{ visitBody.appendChild(visitRow()); autosave(); });
   document.addEventListener('click', (e)=>{
     if(e.target && e.target.closest('.delRow')){ e.target.closest('tr').remove(); autosave(); }
   });
 
-  // Save/Load/Reset
-  $('#btnSave').addEventListener('click', ()=>{ autosave(); alert('Saved to this browser.'); });
-  $('#btnLoad').addEventListener('click', ()=>{
+  document.getElementById('btnSave').addEventListener('click', ()=>{ autosave(); alert('Saved to this browser.'); });
+  document.getElementById('btnLoad').addEventListener('click', ()=>{
     const raw = localStorage.getItem(KEY);
     if(!raw) return alert('No saved data found.');
     populate(JSON.parse(raw));
   });
-  $('#btnReset').addEventListener('click', ()=>{ if(confirm('Clear saved data?')){ localStorage.removeItem(KEY); location.reload(); } });
+  document.getElementById('btnReset').addEventListener('click', ()=>{ if(confirm('Clear saved data?')){ localStorage.removeItem(KEY); location.reload(); } });
 
-  // New
-  $('#btnNewBlank').addEventListener('click', ()=>{ if(confirm('Start a new blank itinerary?')){ populate(blankData()); autosave(); } });
-  $('#btnNewTemplate').addEventListener('click', ()=>{ if(confirm('Load sample template data?')){ populate(templateData()); autosave(); } });
+  document.getElementById('btnNewBlank').addEventListener('click', ()=>{ if(confirm('Start a new blank itinerary?')){ populate(blankData()); autosave(); } });
+  document.getElementById('btnNewTemplate').addEventListener('click', ()=>{ if(confirm('Load sample template data?')){ populate(templateData()); autosave(); } });
 
-  // Export / Import (plain + encrypted)
-  $('#btnExport').addEventListener('click', ()=>{
+  document.getElementById('btnExport').addEventListener('click', ()=>{
     const blob = new Blob([JSON.stringify(collect(), null, 2)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `greenleaf-itinerary-${Date.now()}.json`; a.click();
   });
-  $('#btnExportEnc').addEventListener('click', async ()=>{
+  document.getElementById('btnExportEnc').addEventListener('click', async ()=>{
     const pwd = prompt('Set a password for this file:');
     if(!pwd) return;
     const data = new TextEncoder().encode(JSON.stringify(collect()));
@@ -310,8 +299,8 @@
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `greenleaf-itinerary-${Date.now()}.gleaf`; a.click();
   });
-  $('#btnImport').addEventListener('click', ()=> $('#fileImport').click());
-  $('#fileImport').addEventListener('change', (e)=>{
+  document.getElementById('btnImport').addEventListener('click', ()=> document.getElementById('fileImport').click());
+  document.getElementById('fileImport').addEventListener('change', (e)=>{
     const file = e.target.files[0]; if(!file) return;
     const reader = new FileReader();
     reader.onload = async () => {
@@ -330,7 +319,6 @@
     reader.readAsText(file);
   });
 
-  // Crypto helpers
   function buf2b64(buf){ let binary=''; buf.forEach(b=> binary += String.fromCharCode(b)); return btoa(binary); }
   function b64tobuf(b64){ const bin = atob(b64); const arr = new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i] = bin.charCodeAt(i); return arr.buffer; }
   async function deriveKey(password, salt){
@@ -338,40 +326,38 @@
     return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:100000, hash:'SHA-256'}, keyMaterial, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
   }
 
-  // Print
-  $('#btnPrint').addEventListener('click', ()=>{
-    const sec = $('#disclaimerText')?.closest('.card');
-    if(sec) sec.style.display = ($('#toggleDisclaimer')?.checked ?? true) ? '' : 'none';
+  document.getElementById('btnPrint').addEventListener('click', ()=>{
+    const sec = document.getElementById('disclaimerText')?.closest('.card');
+    if(sec) sec.style.display = (document.getElementById('toggleDisclaimer')?.checked ?? true) ? '' : 'none';
     window.print();
   });
 
-  // Prefs
   function applyPrefs(){
-    setPrint($('#pageSize').value, $('#marginSize').value);
-    const on = $('#uppercaseMode')?.checked;
-    ['[data-field="participants"]','[data-field="sigPreparedName"]','[data-field="sigApprovedName"]'].forEach(sel=> $(sel)?.classList.toggle('uppercase', !!on));
-    $$('#flightTable .upper, #visitTable .upper').forEach(el => { el.classList.toggle('uppercase', !!on); if(on) el.value = el.value.toUpperCase(); });
+    setPrint(document.getElementById('pageSize').value, document.getElementById('marginSize').value);
+    const on = document.getElementById('uppercaseMode')?.checked;
+    ['[data-field="participants"]','[data-field="sigPreparedName"]','[data-field="sigApprovedName"]'].forEach(sel=> document.querySelector(sel)?.classList.toggle('uppercase', !!on));
+    document.querySelectorAll('#flightTable .upper, #visitTable .upper').forEach(el => { el.classList.toggle('uppercase', !!on); if(on) el.value = el.value.toUpperCase(); });
   }
   ;['pageSize','marginSize','uppercaseMode','toggleDisclaimer'].forEach(id=>{
     const el = document.getElementById(id); el && el.addEventListener('change', ()=>{ applyPrefs(); autosave(); });
   });
 
+  function plus(n){ return new Date(Date.now()+n*86400000).toISOString().slice(0,10); }
   function blankData(){
     return {
-      head:{docTitle:'OFFICIAL BUSINESS ITINERARY', tripTag:'', brandName:'Greenleaf Assurance', logo: $('#brandLogo').src},
+      head:{docTitle:'OFFICIAL BUSINESS ITINERARY', tripTag:'', brandName:'Greenleaf Assurance', logo: document.getElementById('brandLogo').src},
       overview:{participants:'', phones:'', purpose:'', factory:'', startDate:'', endDate:'', hotel:'', map:'', hotelContacts:''},
       flights:[], visits:[],
       notes:{pickup:'', instructions:'', payment:'', contacts:''},
-      footer:{showDisclaimer:true, disclaimer: $('#disclaimerText').value},
+      footer:{showDisclaimer:true, disclaimer: document.getElementById('disclaimerText').value},
       sig:{ prepared:{}, approved:{} },
       wm:{ text:'', on:false, opacity:0.05, size:96, angle:-24 },
       prefs:{pageSize:'A4', margin:'normal', uppercase:false}
     };
   }
   function templateData(){
-    const plus = (n)=> new Date(Date.now()+n*86400000).toISOString().slice(0,10);
     return {
-      head:{docTitle:'OFFICIAL BUSINESS ITINERARY', tripTag:'SINGAPORE MANAGEMENT SUPPORT', brandName:'Greenleaf Assurance', logo: $('#brandLogo').src},
+      head:{docTitle:'OFFICIAL BUSINESS ITINERARY', tripTag:'SINGAPORE MANAGEMENT SUPPORT', brandName:'Greenleaf Assurance', logo: document.getElementById('brandLogo').src},
       overview:{
         participants:'JANE DOE; JOHN LEE',
         phones:'+65 8000 0000 | +65 8111 1111',
@@ -394,7 +380,7 @@
         payment:'Project fee and per diem as agreed. Settlement within 14 days after assignment.',
         contacts:'HQ: Niwanka Peries (niwankap@greenleafassurance.com). Local: Nalaka Wijayantha / Puyi Yang.'
       },
-      footer:{showDisclaimer:true, disclaimer: $('#disclaimerText').value},
+      footer:{showDisclaimer:true, disclaimer: document.getElementById('disclaimerText').value},
       sig:{
         prepared:{ name:'JANE DOE', pos:'HEAD OF COMPLIANCE', img:'', date: plus(0) },
         approved:{ name:'JOHN LEE', pos:'DIRECTOR', img:'', date: plus(0) }
@@ -404,11 +390,8 @@
     };
   }
 
-  // Init
-  $('#year').textContent = new Date().getFullYear();
   setPrint('A4','normal');
   const saved = localStorage.getItem(KEY);
   if(saved){ try{ populate(JSON.parse(saved)); }catch{ populate(templateData()); } }
   else{ populate(templateData()); }
-
 })();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Greenleaf Itinerary Builder — Pro v3</title>
+  <title>Greenleaf Itinerary Builder — Pro v3.1</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,21 +41,12 @@
       </div>
       <div class="right">
         <label class="inline">Page:
-          <select id="pageSize">
-            <option value="A4" selected>A4</option>
-            <option value="Letter">Letter</option>
-          </select>
+          <select id="pageSize"><option value="A4" selected>A4</option><option value="Letter">Letter</option></select>
         </label>
         <label class="inline">Margins:
-          <select id="marginSize">
-            <option value="narrow">Narrow</option>
-            <option value="normal" selected>Normal</option>
-            <option value="wide">Wide</option>
-          </select>
+          <select id="marginSize"><option value="narrow">Narrow</option><option value="normal" selected>Normal</option><option value="wide">Wide</option></select>
         </label>
-        <label class="inline">
-          <input type="checkbox" id="uppercaseMode" /> CAPS for key fields
-        </label>
+        <label class="inline"><input type="checkbox" id="uppercaseMode" /> CAPS for key fields</label>
         <button class="btn" id="btnExport"><svg><use href="#i-download"/></svg>Export JSON</button>
         <button class="btn" id="btnExportEnc">Export (Encrypted)</button>
         <input type="file" id="fileImport" accept=".json,.gleaf" style="display:none" />
@@ -211,8 +202,8 @@ Participants are responsible for ensuring compliance with all applicable laws, h
       </div>
     </section>
 
-    <!-- Branding & Watermark -->
-    <section class="card">
+    <!-- Branding & Watermark (NO PRINT) -->
+    <section class="card no-print">
       <h2><svg><use href="#i-watermark"/></svg>Branding & Watermark</h2>
       <div class="grid col-2">
         <div>
@@ -239,8 +230,8 @@ Participants are responsible for ensuring compliance with all applicable laws, h
       </div>
     </section>
 
-    <!-- Help -->
-    <section class="card">
+    <!-- Help (NO PRINT) -->
+    <section class="card no-print">
       <h2>Help — Export/Import & Hosting</h2>
       <ol>
         <li><strong>Export JSON:</strong> Save a <code>.json</code> backup of the itinerary.</li>
