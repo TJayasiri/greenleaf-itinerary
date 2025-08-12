@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Greenleaf Itinerary Builder — Pro v3.2</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Greenleaf Itinerary Builder — Pro v3.2.1</title>
   <link rel="icon" href="data:,">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- SVG Icons -->
@@ -33,7 +33,7 @@
   </svg>
 
   <!-- Toolbar -->
-  <div class="toolbar">
+  <div class="toolbar no-print" role="region" aria-label="Toolbar">
     <div class="toolbar-inner">
       <div class="left">
         <button class="btn primary" id="btnPrint"><svg><use href="#i-print"/></svg>Download / Print PDF</button>
@@ -49,10 +49,10 @@
         <label class="inline">Margins:
           <select id="marginSize"><option value="narrow">Narrow</option><option value="normal" selected>Normal</option><option value="wide">Wide</option></select>
         </label>
-        <label class="inline"><input type="checkbox" id="uppercaseMode" /> CAPS for key fields</label>
+        <label class="inline"><input type="checkbox" id="uppercaseMode"> CAPS for key fields</label>
         <button class="btn" id="btnExport"><svg><use href="#i-download"/></svg>Export JSON</button>
         <button class="btn" id="btnExportEnc">Export (Encrypted)</button>
-        <input type="file" id="fileImport" accept=".json,.gleaf" style="display:none" />
+        <input type="file" id="fileImport" accept=".json,.gleaf" hidden>
         <button class="btn" id="btnImport">Import</button>
         <button class="btn danger" id="btnReset">Reset</button>
       </div>
@@ -60,16 +60,19 @@
   </div>
 
   <div class="wrap watermark-wrap" id="watermarkWrap">
-    <!-- Print Doc Header (shows in print) -->
-    <div class="docbar print-only" id="docbar">
+    <!-- Print Doc Header -->
+    <div class="docbar print-only" id="docbar" aria-hidden="true">
       <div><strong>Doc ID:</strong> <span id="docId">GLA-TRIP-XXXX</span></div>
       <div><strong>Version:</strong> <span id="docVer">1.0</span></div>
       <div><strong>Generated:</strong> <span id="docGen"></span></div>
     </div>
 
+    <!-- Brand Header -->
     <header class="hero card">
       <div class="brand-row">
-        <img class="logo" id="brandLogo" src="https://cdn.shopify.com/s/files/1/0656/2054/1670/files/Greenleaf_new_company_Logo_2024_Plane.png?v=1738660490" alt="Greenleaf Assurance Logo" />
+        <img class="logo" id="brandLogo"
+             src="https://cdn.shopify.com/s/files/1/0656/2054/1670/files/Greenleaf_new_company_Logo_2024_Plane.png?v=1738660490"
+             alt="Greenleaf Assurance Logo">
         <div class="title-col">
           <h1 class="title">OFFICIAL BUSINESS ITINERARY</h1>
           <div class="sub">
@@ -82,16 +85,17 @@
     </header>
 
     <!-- Executive Summary -->
-    <section class="card">
-      <div class="actions">
+    <section class="card" aria-label="Executive Summary">
+      <div class="actions no-print">
         <h2><svg><use href="#i-summary"/></svg>Executive Summary</h2>
         <button class="btn small" id="btnGenSummary"><svg><use href="#i-info"/></svg>Regenerate</button>
       </div>
-      <div id="summary" class="note" contenteditable data-placeholder="A concise summary of the trip will appear here. Click Regenerate, or type to edit."></div>
+      <div id="summary" class="note keep" contenteditable
+           data-placeholder="A concise summary of the trip will appear here. Click Regenerate, or type to edit."></div>
     </section>
 
-    <!-- Traveler(s) -->
-    <section class="card grid col-2">
+    <!-- Traveler & Overview -->
+    <section class="card grid col-2" aria-label="Traveler and Overview">
       <div>
         <h2><svg><use href="#i-person"/></svg>Traveler(s)</h2>
         <label>Person(s) — UPPERCASE recommended</label>
@@ -99,9 +103,9 @@
         <label>Contact Phones (E.164 format)</label>
         <textarea data-field="phones" placeholder="e.g., +65 9000 0000 | +84 90 000 0000"></textarea>
         <label>Arrival Date (ISO 8601)</label>
-        <input type="date" data-field="startDate"/>
+        <input type="date" data-field="startDate">
         <label>Departure Date (ISO 8601)</label>
-        <input type="date" data-field="endDate"/>
+        <input type="date" data-field="endDate">
       </div>
       <div>
         <h2><svg><use href="#i-factory"/></svg>Trip Overview</h2>
@@ -113,25 +117,31 @@
     </section>
 
     <!-- Flights -->
-    <section class="card">
-      <div class="actions">
+    <section class="card" aria-label="Flights">
+      <div class="actions no-print">
         <h2><svg><use href="#i-plane"/></svg>Flights</h2>
         <button class="btn small" id="addFlight"><svg><use href="#i-plus"/></svg>Add flight</button>
       </div>
       <div class="table-wrap">
-        <table id="flightTable">
-
+        <table id="flightTable" class="table-flex" aria-describedby="Flights table">
           <colgroup>
-  <col style="width:14%">
-  <col style="width:16%">
-  <col style="width:25%">
-  <col style="width:25%">
-  <col style="width:10%">
-  <col style="width:10%">
-  </colgroup>
+            <col style="width:14%">
+            <col style="width:16%">
+            <col style="width:25%">
+            <col style="width:25%">
+            <col style="width:10%">
+            <col style="width:10%">
+            <col style="width:auto">  <!-- actions -->
+          </colgroup>
           <thead>
             <tr>
-              <th>Flight</th><th>Date (ISO)</th><th>From (IATA)</th><th>To (IATA)</th><th>Dep (24h)</th><th>Arr (24h)</th><th class="row-actions">Actions</th>
+              <th>Flight</th>
+              <th>Date (ISO)</th>
+              <th>From (IATA)</th>
+              <th>To (IATA)</th>
+              <th>Dep (24h)</th>
+              <th>Arr (24h)</th>
+              <th class="row-actions">Actions</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -139,27 +149,34 @@
       </div>
       <datalist id="airports"></datalist>
     </section>
-    
-<div class="page-break" aria-hidden="true"></div>
-    
+
+    <!-- Page break so Visits starts on page 2 -->
+    <div class="page-break" aria-hidden="true"></div>
+
     <!-- Visits -->
-    <section class="card" id="visitsSection">
-      <div class="actions">
+    <section class="card" id="visitsSection" aria-label="Visits">
+      <div class="actions no-print">
         <h2><svg><use href="#i-factory"/></svg>Visits</h2>
         <button class="btn small" id="addVisit"><svg><use href="#i-plus"/></svg>Add activity</button>
       </div>
       <div class="table-wrap">
-        <table id="visitTable">
+        <table id="visitTable" class="table-flex" aria-describedby="Visits table">
           <colgroup>
-  <col style="width:16%">
-  <col style="width:20%">
-  <col style="width:26%">
-  <col style="width:28%">
-  <col style="width:10%">
-</colgroup>
+            <col style="width:16%">
+            <col style="width:20%">
+            <col style="width:26%">
+            <col style="width:28%">
+            <col style="width:10%">
+            <col style="width:auto"> <!-- actions -->
+          </colgroup>
           <thead>
             <tr>
-              <th>Date (ISO)</th><th>Activity</th><th>Facility</th><th>Address</th><th>Transport</th><th class="row-actions">Actions</th>
+              <th>Date (ISO)</th>
+              <th>Activity</th>
+              <th>Facility</th>
+              <th>Address</th>
+              <th>Transport</th>
+              <th class="row-actions">Actions</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -167,15 +184,15 @@
       </div>
     </section>
 
-    <!-- Hotel (moved down) -->
-    <section class="card" id="hotelSection">
+    <!-- Hotel -->
+    <section class="card" id="hotelSection" aria-label="Hotel">
       <h2><svg><use href="#i-hotel"/></svg>Hotel</h2>
       <div class="grid col-2">
         <div>
           <label>Hotel Name</label>
-          <input type="text" data-field="hotel" placeholder="e.g., ibis Styles Singapore on MacPherson"/>
+          <input type="text" data-field="hotel" placeholder="e.g., ibis Styles Singapore on MacPherson">
           <label>Map Link (Google Maps)</label>
-          <input type="text" data-field="map" placeholder="https://maps.google.com/..."/>
+          <input type="text" data-field="map" placeholder="https://maps.google.com/...">
         </div>
         <div>
           <label>Hotel Contacts</label>
@@ -185,31 +202,31 @@
     </section>
 
     <!-- Notes -->
-    <section class="card grid col-2">
+    <section class="card grid col-2" aria-label="Notes">
       <div>
         <h2><svg><use href="#i-note"/></svg>Coordination</h2>
-        <div class="note" contenteditable data-field="pickup" data-placeholder="Pickup details, driver, onsite POC…"></div>
+        <div class="note keep" contenteditable data-field="pickup" data-placeholder="Pickup details, driver, onsite POC…"></div>
       </div>
       <div>
         <h2><svg><use href="#i-note"/></svg>Field Instructions</h2>
-        <div class="note" contenteditable data-field="instructions" data-placeholder="CAP closure checklist, safety, documents…"></div>
+        <div class="note keep" contenteditable data-field="instructions" data-placeholder="CAP closure checklist, safety, documents…"></div>
       </div>
     </section>
 
-    <section class="card grid col-2">
+    <section class="card grid col-2" aria-label="Payment and Confirmation">
       <div>
         <h2><svg><use href="#i-note"/></svg>Payment</h2>
-        <div class="note" contenteditable data-field="payment" data-placeholder="Per diem, settlement terms, reimbursements…"></div>
+        <div class="note keep" contenteditable data-field="payment" data-placeholder="Per diem, settlement terms, reimbursements…"></div>
       </div>
       <div>
         <h2><svg><use href="#i-note"/></svg>Contacts & Confirmation</h2>
-        <div class="note" contenteditable data-field="contacts" data-placeholder="Coordinator email, acknowledgement text…"></div>
+        <div class="note keep" contenteditable data-field="contacts" data-placeholder="Coordinator email, acknowledgement text…"></div>
       </div>
     </section>
 
-    <!-- Signatures -->
-    <section class="card page-break">
-      <div class="actions">
+    <!-- Signatures (print hides inputs, shows lines) -->
+    <section class="card page-break" aria-label="Signatures">
+      <div class="actions no-print">
         <h2><svg><use href="#i-sign"/></svg>Signatures</h2>
       </div>
       <div class="grid col-2 sig-grid">
@@ -219,11 +236,11 @@
           <label>Position</label>
           <input data-field="sigPreparedPos" placeholder="Title">
           <label>Signature Image URL (optional)</label>
-          <input data-field="sigPreparedImg" placeholder="https://.../signature.png">
+          <input data-field="sigPreparedImg" placeholder="https://…/signature.png">
           <label>Date</label>
           <input type="date" data-field="sigPreparedDate">
           <div class="sig-preview">
-            <div class="sig-line"><img id="sigPreparedPreview" alt="" /></div>
+            <div class="sig-line"><img id="sigPreparedPreview" alt=""></div>
             <div class="sig-name" id="sigPreparedNamePreview"></div>
             <div class="sig-pos" id="sigPreparedPosPreview"></div>
           </div>
@@ -234,11 +251,11 @@
           <label>Position</label>
           <input data-field="sigApprovedPos" placeholder="Title">
           <label>Signature Image URL (optional)</label>
-          <input data-field="sigApprovedImg" placeholder="https://.../signature.png">
+          <input data-field="sigApprovedImg" placeholder="https://…/signature.png">
           <label>Date</label>
           <input type="date" data-field="sigApprovedDate">
           <div class="sig-preview">
-            <div class="sig-line"><img id="sigApprovedPreview" alt="" /></div>
+            <div class="sig-line"><img id="sigApprovedPreview" alt=""></div>
             <div class="sig-name" id="sigApprovedNamePreview"></div>
             <div class="sig-pos" id="sigApprovedPosPreview"></div>
           </div>
@@ -246,17 +263,18 @@
       </div>
     </section>
 
-    <!-- Fixed Standard Disclaimer (always prints) -->
-    <section class="card no-print">
+    <!-- Fixed Standard Disclaimer (prints only) -->
+    <section class="card no-print" aria-hidden="true">
       <h2><svg><use href="#i-shield"/></svg>Disclaimer (fixed)</h2>
       <p>The standard legal disclaimer is automatically appended to the printed PDF. You don’t need to edit it here.</p>
     </section>
 
     <div class="footer">© <span id="year"></span> <span id="brandNameFooter">Greenleaf Assurance</span> — Itinerary Builder</div>
-    <div id="printDisclaimer" class="print-only disclaimer-fixed">
-      This itinerary is an internal planning document prepared exclusively for authorized personnel of Greenleaf Assurance and the designated participants named herein. It contains confidential business information, including travel details, contact information, and operational schedules, which must not be disclosed, distributed, or reproduced without prior written consent from Greenleaf Assurance.<br/><br/>
-      All travel arrangements, timings, and activities are subject to change based on operational requirements, local regulations, and unforeseen circumstances. While every effort has been made to ensure the accuracy of the information contained in this document, Greenleaf Assurance accepts no liability for any loss, delay, expense, or inconvenience caused by events outside its control, including but not limited to transport disruptions, governmental actions, security restrictions, or force majeure events.<br/><br/>
-      Participants are responsible for ensuring compliance with all applicable laws, health and safety protocols, and immigration requirements in the jurisdictions visited. Any expenses not explicitly authorized in advance must be borne by the traveler. By using this document, you acknowledge and agree to these terms.<br/><br/>
+
+    <div id="printDisclaimer" class="print-only disclaimer-fixed" aria-hidden="true">
+      This itinerary is an internal planning document prepared exclusively for authorized personnel of Greenleaf Assurance and the designated participants named herein. It contains confidential business information, including travel details, contact information, and operational schedules, which must not be disclosed, distributed, or reproduced without prior written consent from Greenleaf Assurance.<br><br>
+      All travel arrangements, timings, and activities are subject to change based on operational requirements, local regulations, and unforeseen circumstances. While every effort has been made to ensure the accuracy of the information contained in this document, Greenleaf Assurance accepts no liability for any loss, delay, expense, or inconvenience caused by events outside its control, including but not limited to transport disruptions, governmental actions, security restrictions, or force majeure events.<br><br>
+      Participants are responsible for ensuring compliance with all applicable laws, health and safety protocols, and immigration requirements in the jurisdictions visited. Any expenses not explicitly authorized in advance must be borne by the traveler. By using this document, you acknowledge and agree to these terms.<br><br>
       © 2025 Greenleaf Assurance — All Rights Reserved.
     </div>
   </div>
